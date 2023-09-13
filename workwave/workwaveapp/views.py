@@ -10,6 +10,7 @@ from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 import json
 from datetime import datetime
 from django.db.models import Sum
+from django.contrib import messages
 
 
 class BootStrapModelForm(forms.ModelForm):
@@ -81,7 +82,15 @@ def submit_login(request):
         
         data_dict = {"status":True}
         return JsonResponse(data_dict)
-        
+
+
+def logout(request):
+
+    session_key = request.session.session_key
+    request.session.delete(session_key)
+
+    return redirect('login')
+
 
 def cl_application(request):
     
@@ -109,7 +118,13 @@ def add_cl(request):
     form = AddCLForm()
 
     if request.method == "GET":
-        return render(request,'add_cl.html', {'form':form, "info_dict":info_dict, "uid":uid })
+        # if pending application > 1 , diable the submission button
+        pending_count = models.AddCL.objects.filter(ApprovalStatus="Pending").count()
+        print(pending_count)
+        if pending_count > 0:
+            messages.error(request, "There is still a request pending!")
+
+        return render(request,'add_cl.html', {'form':form, "info_dict":info_dict, "uid":uid,"pending_count":pending_count })
 
     form = AddCLForm(data=request.POST)
     if form.is_valid():
@@ -137,6 +152,10 @@ def add_cl(request):
         approverEmail = models.UserRegistration.objects.filter(name=approverName).first().email
         form.instance.ApproverEmail = approverEmail
         form.instance.ApprovalStatus = "Pending"
+
+        # if more than one Pending application, then do not let it save and hv alert "There is still a request pedning!"
+        
+
         form.save()
         return JsonResponse(data_dict)
     else:

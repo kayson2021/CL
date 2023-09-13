@@ -13,7 +13,17 @@
     
     </head>
     <body>
-    <h1>navigation</h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col d-flex justify-content-start">
+                    <h1 class="">navigation</h1>   
+                </div>
+                <div class="col d-flex justify-content-end pt-2">
+                    <a href="/logout/" class=""><button type="button" class="btn btn-dark">Log out</button></a>     
+                </div>
+            </div>
+        </div>
+
     {%block content%}{%endblock%}
     
     <script src="{% static 'js/jquery-3.7.0.min.js' %}"></script>

@@ -25,6 +25,7 @@ urlpatterns = [
     path('submit_registration/', views.submit_registration, name = "submit_registration"),
     path('login/', views.login, name="login"),
     path('submit_login/', views.submit_login, name="submit_login"),
+    path('logout/', views.logout, name = "logout"),
     path('CL_application/', views.cl_application, name="CL_application"),
     path('add_cl/', views.add_cl, name = "add_cl"),
     path('<int:uid>/my_record/', views.my_record, name = "my_record"),

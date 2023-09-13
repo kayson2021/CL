@@ -8,25 +8,31 @@
 {%block content%}
 
 <div class="container">
-    <div class="card">
-        <div class="card-header">
-          CL application Form - <a href="/{{uid}}/my_record/">my record</a>
-        </div>
-        <div class="card-body">
-            <form id="CLAppForm" novalidate>
-                
-                {% for field in form %}
-                <div class="mb-3" style="position: relative;">
-                  <label for="{{field.label}}" class="form-label">{{field.label}}</label>
-                  {{field}}
-                  <div style="color: red;position: absolute;" >{{field.error.0}}</div>
-                </div>
-                
+  <div class="card">
+      <div class="card-header">
+        CL application Form - <a href="/{{uid}}/my_record/">my record</a>
+      </div>
+      <div class="card-body">
+              {% if messages %}
+              <ul class="messages">
+                {% for message in messages %}
+                  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                 {% endfor %}
-                <button id='submitForm'  type="button" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
-    </div>
+              </ul>
+              {% endif %}
+          <form id="CLAppForm" novalidate>
+              {% for field in form %}
+              <div class="mb-3" style="position: relative;">
+                <label for="{{field.label}}" class="form-label">{{field.label}}</label>
+                {{field}}
+                <div style="color: red;position: absolute;" >{{field.error.0}}</div>
+              </div>
+              {% endfor %}
+
+              <button id="submitForm" type="button" class="btn btn-primary" {% if pending_count > 0 %} disabled {% endif %} >Submit</button>
+          </form>
+      </div>
+  </div>
 </div>
 
 {%endblock%}

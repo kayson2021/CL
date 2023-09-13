@@ -1,0 +1,86 @@
+{%extends 'layout/basic.html' %}
+
+
+{%block title%}My record{% endblock%}
+{%block css%}
+
+{%endblock%}
+
+{%block content%}
+
+<div class="container">
+    <div class="card">
+        
+        <div class="card-header">
+            My record 
+        </div>
+        <div class="card-body">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">OT started from</th>
+                <th scope="col">OT end at</th>
+                <th scope="col">Have lunch?</th>
+                <th scope="col">Have dinner?</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Total OT hours applied</th>
+                <th scope="col">Approval status</th>
+                <th scope="col">Approver</th>
+                <th scope="col">Accumlated OT hours as now</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in row_object %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{obj.OT_start}}</td>
+                <td>{{obj.OT_end}}</td>
+                <td>{{obj.get_Hv_lunch_display}}</td>
+                <td>{{obj.get_Hv_dinner_display}}</td>
+                <td>{{obj.Remark}}</td>
+                <td>{{obj.TotalOTHour}}</td>
+                <td>{{obj.ApprovalStatus}}</td>
+                <td>{{obj.ApproverList_id}}</td>
+                <td>{{AccumuatedTotalOTHour}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    
+    </table>
+        </div>
+    </div>
+</div>
+
+{%endblock%}
+
+{%block js%}
+<script>
+    $(function () {
+        bindSubmitBtn();
+    });
+
+    function bindSubmitBtn() {
+        $('#submitForm').click(function () {
+            //$('#submitForm').empty()
+            $.ajax({
+                url: "{% url 'submit_registration' %}",
+                type: 'POST',
+                data: $('#RegistrationForm').serialize(),
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        alert('ok')
+                    } else {
+                        $.each(res.error, function (name, data) {
+                            $('#id_' + name).next().text(data[0])
+                        })
+                    }
+                }
+            })
+        })
+    }
+
+
+</script>
+{%endblock%}

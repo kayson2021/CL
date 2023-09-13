@@ -1,0 +1,64 @@
+{%extends 'layout/basic.html' %}
+  
+
+{%block title%}Registration{% endblock%}
+{%block css%}
+
+{%endblock%}
+
+{%block content%}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+          Registration Form
+        </div>
+        <div class="card-body">
+            <form id="RegistrationForm" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                  <label for="{{field.label}}" class="form-label">{{field.label}}</label>
+                  {{field}}
+                  <span style="color: red;" >{{field.error.0}}</span>
+                  <!--<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">-->
+                </div>
+                {% endfor %}
+                <button id='submitForm'  type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{%endblock%}
+
+{%block js%}
+<script>
+    $(function(){
+        bindSubmitBtn();
+    });
+
+    function bindSubmitBtn(){
+        $('#submitForm').click(function(){
+            //$('#submitForm').empty()
+            $.ajax({
+                url:"{% url 'submit_registration' %}",
+                type:'POST',
+                data: $('#RegistrationForm').serialize(),
+                dataType:"JSON",
+                success: function(res){
+                    if(res.status){
+                        alert('ok')
+                    }else{
+                        $.each(res.error, function(name, data){
+                            $('#id_'+name).next().text(data[0])
+                        })
+                    }
+                }
+            })
+        })
+    }
+
+
+</script>
+{%endblock%}

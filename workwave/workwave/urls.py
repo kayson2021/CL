@@ -32,5 +32,8 @@ urlpatterns = [
     path('approver_page/', views.approver_page, name = "approver_page"),
     path('approver_page/approve/', views.approver_page_approve, name = "approver_page_approve"),
     path('approver_page/reject/', views.approver_page_reject, name = "approver_page_reject"),
+
+    path('<int:uid>/my_record/download/', views.my_record_dl, name = "my_record_dl"),
     
+    path('use_cl/', views.use_cl, name = "use_cl"),
 ]

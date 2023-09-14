@@ -11,6 +11,7 @@ import json
 from datetime import datetime
 from django.db.models import Sum
 from django.contrib import messages
+from excel_response import ExcelResponse
 
 
 class BootStrapModelForm(forms.ModelForm):
@@ -172,6 +173,33 @@ def my_record(request,uid):
     return render(request, 'my_record.html',{"row_object":row_object})
 
 
+def my_record_dl(request, uid):
+    row_object = models.AddCL.objects.filter(StaffID=uid).all()
+    data = [
+        ['No', 'OT started from', 'OT end at', 'Have lunch?', 'Have dinner?', 'Remarks', 'Total OT hours applied',
+         'Approval status', 'Approver', 'Accumulated OT hours as of now']
+    ]
+
+    for i, obj in enumerate(row_object):
+        data.append([
+            i + 1,
+            obj.OT_start,
+            obj.OT_end,
+            obj.get_Hv_lunch_display(),
+            obj.get_Hv_dinner_display(),
+            obj.Remark,
+            obj.TotalOTHour,
+            obj.ApprovalStatus,
+            obj.ApproverList_id,
+            obj.AccumuatedTotalOTHour
+        ])
+
+    data_list = [list(item) for item in data]
+ 
+    response = ExcelResponse(data_list, 'my_record')
+    return response
+
+
 def approver_page(request):
     
     print({"approver":request.appUser.user})
@@ -212,6 +240,36 @@ def approver_page_reject(request):
         row_object.save()
 
     return redirect('/approver_page/')
+
+
+class UseCLForm(BootStrapModelForm):
+    class Meta:
+        model = models.UseCL
+        fields = ['CL_start', 'CL_end', 'TotalCLHour', 'AccumuatedTotalOTHour' ]
+        widgets = {
+            'CL_start':DateTimePickerInput(),
+            'CL_end':DateTimePickerInput(range_from='OT_start'),
+        }
+
+@csrf_exempt
+def use_cl(request):
+    info_dict = request.session['info']
+    uid = info_dict.get('id')
+    username = info_dict.get('name')
+    user_email = info_dict.get('email')
+    form = UseCLForm()
+
+    if request.method == "GET":
+        return render(request, "use_cl.html", {'form':form})
+    
+    form = UseCLForm(data=request.POST)
+    if form.is_valid():
+
+        data_dict = {"status":True,}
+        CL_start = form.cleaned_data[CL_start]
+        CL_end = form.cleaned_data[CL_end]
+        TotalCLHour = CL_end - CL_start
+        AccumuatedTotalOTHour = models.AddCL.objects.filter(id=request.appUser.id).first().AccumuatedTotalOTHour
 
 
 

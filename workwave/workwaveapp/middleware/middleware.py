@@ -27,6 +27,8 @@ class LoginMiddleware:
             print({"user_object":user_object})
             request.appUser.user = user_object.email
             print({"request.appUser.user":request.appUser.user})
+            request.appUser.id = user_object.id
+            print({"request.appUser.id":request.appUser.id})
             return self.get_response(request) 
         
         return redirect('/login/')
